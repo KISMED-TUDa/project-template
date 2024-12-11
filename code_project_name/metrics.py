@@ -1,13 +1,14 @@
 import torch
 
 def accuracy(predictions:torch.Tensor, labels:torch.Tensor):
-    assert predictions.ndim <= 2 and labels.ndim <= 2, """predictions or labels had more than 2 dimensions. 
-    Only 1D tensors with integer class labels or 2D one hot tensors are supported."""
+    assert predictions.shape == labels.shape, """Predictions and labels must have the same shape"""
+    if(predictions.ndim > 2): # Assume last dimension contains the one hot representation
+        predictions = predictions.view(-1, predictions.shape[-1])
+        labels = labels.view(-1, predictions.shape[-1])
 
     # Transform one hot representation to class label representation
     if(predictions.ndim > 1):
         predictions = predictions.argmax(dim=-1)
-    if(labels.ndim > 1):
         labels = labels.argmax(dim=-1)
     
     # Calculate accuracy as number of correct predictions divided by the number of predictions
